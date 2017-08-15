@@ -13,6 +13,8 @@ public class Game : MonoBehaviour
 	double count = 0;
 	DateTime start;
 	string path;
+
+	Map map;
 	// Use this for initialization
 	void Start()
 	{
@@ -20,7 +22,9 @@ public class Game : MonoBehaviour
 		path = Application.persistentDataPath + @"/save.txt";
 		Debug.Log("path = " + path);
 
-		Load();
+		map = new Map();
+		map.Create();
+		map.Draw(-15, -10);
 	}
 	
 	// Update is called once per frame
@@ -35,30 +39,8 @@ public class Game : MonoBehaviour
 		if (second > 5)
 		{
 			start = DateTime.Now;
-
-			Save();
 		}
 	}
 
-	void Save()
-	{
-		StreamWriter writer = new StreamWriter(path);
-		writer.WriteLine(count.ToString("0.00"));
-		writer.WriteLine(start.ToString());
-		writer.Close();
-	}
 
-	void Load()
-	{
-		if (File.Exists(path))
-		{
-			StreamReader reader = new StreamReader(path);
-			count = Convert.ToDouble(reader.ReadLine());
-			DateTime time = Convert.ToDateTime(reader.ReadLine());
-			Debug.Log("time = " + time.ToString());
-
-			double seconds = (DateTime.Now - time).TotalSeconds;
-			count += seconds;
-		}
-	}
 }
