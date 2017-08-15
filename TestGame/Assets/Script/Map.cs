@@ -6,6 +6,7 @@ public enum Terrain : int
 {
 	MOUNTAIN = 0,
 	HILL,
+	OCEAN,
 	SEA,
 	GRASS,
 	PLAIN,
@@ -96,6 +97,12 @@ public class Map
 			terrainGenerateInfoArray[i] = info;
 		}
 
+		terrainGenerateInfoArray[(int)Terrain.GRASS].expectedChance = 50;
+		terrainGenerateInfoArray[(int)Terrain.PLAIN].expectedChance = 15;
+		terrainGenerateInfoArray[(int)Terrain.FOREST].expectedChance = 20;
+		terrainGenerateInfoArray[(int)Terrain.JUNGLE].expectedChance = 10;
+		terrainGenerateInfoArray[(int)Terrain.DESERT].expectedChance = 5;
+
 		GenerateHeight();
 	}
 
@@ -178,9 +185,17 @@ public class Map
 			return;
 		}
 
-		if (currentTile.height >= minMountHeight - 40)
+		if (currentTile.height >= minMountHeight - 30)
 		{
 			currentTile.terrain = Terrain.HILL;
+			currentTile.flag = 2;
+			numberOfTilesDone++;
+			return;
+		}
+
+		if (currentTile.height <= -50)
+		{
+			currentTile.terrain = Terrain.OCEAN;
 			currentTile.flag = 2;
 			numberOfTilesDone++;
 			return;
@@ -195,13 +210,11 @@ public class Map
 		}
 
 		int numberOfLowLandTerrain = (int)Terrain.TOTAL - (int)Terrain.SEA;
-		float totalChance = 0;
 		for (int i = (int)Terrain.SEA + 1; i < terrainGenerateInfoArray.Length; i++)
 		{
 			terrainGenerateInfoArray[i].chance = terrainGenerateInfoArray[i].expectedChance;
-			float chance = (terrainGenerateInfoArray[i].totalTiles + 1.0f) / numberOfTilesDone * numberOfLowLandTerrain;
-			terrainGenerateInfoArray[i].chance *= chance;
-			totalChance += terrainGenerateInfoArray[i].chance;
+			float chance = (terrainGenerateInfoArray[i].totalTiles + 10.0f) / (numberOfTilesDone + numberOfLowLandTerrain * 10) * numberOfLowLandTerrain;
+			terrainGenerateInfoArray[i].chance /= chance;
 		}
 
 		for (int i = 0; i < adjacentTiles.Count; i++)
@@ -209,12 +222,44 @@ public class Map
 			Tile nextTile = adjacentTiles[i];
 
 			int nextTileTerrain = (int)nextTile.terrain;
-			if (nextTileTerrain > (int)Terrain.SEA)
+			switch (nextTile.terrain)
 			{
-				totalChance -= terrainGenerateInfoArray[nextTileTerrain].chance;
+			case Terrain.GRASS:
 				terrainGenerateInfoArray[nextTileTerrain].chance *= 1.5f;
-				totalChance += terrainGenerateInfoArray[nextTileTerrain].chance;
+				break;
+
+			case Terrain.PLAIN:
+				terrainGenerateInfoArray[nextTileTerrain].chance *= 1.5f;
+				terrainGenerateInfoArray[(int)Terrain.JUNGLE].chance *= 0.5f;
+				terrainGenerateInfoArray[(int)Terrain.DESERT].chance *= 0.1f;
+				break;
+
+			case Terrain.FOREST:
+				terrainGenerateInfoArray[nextTileTerrain].chance *= 1.5f;
+				terrainGenerateInfoArray[(int)Terrain.JUNGLE].chance *= 0.5f;
+				terrainGenerateInfoArray[(int)Terrain.DESERT].chance *= 0.1f;
+				break;
+
+			case Terrain.JUNGLE:
+				terrainGenerateInfoArray[nextTileTerrain].chance *= 2.5f;
+				terrainGenerateInfoArray[(int)Terrain.FOREST].chance *= 0.5f;
+				terrainGenerateInfoArray[(int)Terrain.PLAIN].chance *= 0.2f;
+				terrainGenerateInfoArray[(int)Terrain.DESERT].chance *= 0.1f;
+				break;
+
+			case Terrain.DESERT:
+				terrainGenerateInfoArray[nextTileTerrain].chance *= 5.0f;
+				terrainGenerateInfoArray[(int)Terrain.PLAIN].chance *= 0.1f;
+				terrainGenerateInfoArray[(int)Terrain.FOREST].chance *= 0.1f;
+				terrainGenerateInfoArray[(int)Terrain.JUNGLE].chance *= 0.1f;
+				break;
 			}
+		}
+
+		float totalChance = 0;
+		for (int i = (int)Terrain.SEA + 1; i < terrainGenerateInfoArray.Length; i++)
+		{
+			totalChance += terrainGenerateInfoArray[i].chance;
 		}
 
 		float randomChance = Random.Range(0, totalChance);
@@ -254,25 +299,28 @@ public class Map
 				switch (map[i][j].terrain)
 				{
 				case Terrain.MOUNTAIN:
-					map[i][j].SetColor(200, 0, 0);
+					map[i][j].SetColor(100, 0, 0);
 					break;
 				case Terrain.HILL:
-					map[i][j].SetColor(100, 0, 0);
+					map[i][j].SetColor(200, 0, 0);
+					break;
+				case Terrain.OCEAN:
+					map[i][j].SetColor(0, 0, 100);
 					break;
 				case Terrain.SEA:
 					map[i][j].SetColor(0, 0, 200);
 					break;
 				case Terrain.GRASS:
-					map[i][j].SetColor(0, 100, 0);
+					map[i][j].SetColor(0, 200, 0);
 					break;
 				case Terrain.PLAIN:
 					map[i][j].SetColor(200, 200, 200);
 					break;
 				case Terrain.FOREST:
-					map[i][j].SetColor(0, 150, 0);
+					map[i][j].SetColor(0, 100, 0);
 					break;
 				case Terrain.JUNGLE:
-					map[i][j].SetColor(0, 200, 0);
+					map[i][j].SetColor(200, 0, 200);
 					break;
 				case Terrain.DESERT:
 					map[i][j].SetColor(200, 200, 0);
@@ -281,8 +329,6 @@ public class Map
 					map[i][j].SetColor(0, 0, 0);
 					break;
 				}
-
-
 			}
 		}
 	}

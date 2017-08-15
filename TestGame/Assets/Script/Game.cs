@@ -20,7 +20,7 @@ public class Game : MonoBehaviour
 	{
 		start = DateTime.Now;
 		path = Application.persistentDataPath + @"/save.txt";
-		Debug.Log("path = " + path);
+		//Debug.Log("path = " + path);
 
 		map = new Map();
 		map.Create();
