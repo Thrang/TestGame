@@ -7,40 +7,29 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
-	public Text text;
-	public Text text2;
-
-	double count = 0;
-	DateTime start;
-	string path;
+	CameraController cameraController;
 
 	Map map;
+
 	// Use this for initialization
 	void Start()
 	{
-		start = DateTime.Now;
-		path = Application.persistentDataPath + @"/save.txt";
-		//Debug.Log("path = " + path);
+		cameraController = new CameraController();
+		cameraController.Init(Camera.main);
 
 		map = new Map();
 		map.Create();
-		map.Draw(-15, -10);
+		map.Draw(-15f, -10f);
 	}
 	
 	// Update is called once per frame
 	void Update()
 	{
-		count += Time.deltaTime;
-		text.text = count.ToString("0.00");
-
-		double second = (DateTime.Now - start).TotalSeconds;
-		text2.text = second.ToString("0.00");
-
-		if (second > 5)
-		{
-			start = DateTime.Now;
-		}
+		map.Update();
 	}
 
-
+	void LateUpdate()
+	{
+		cameraController.Update();
+	}
 }

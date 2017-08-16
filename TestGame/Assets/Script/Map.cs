@@ -332,4 +332,42 @@ public class Map
 			}
 		}
 	}
+
+	Vector3 mouseStart;
+
+	public void Update()
+	{
+		bool isMouseDown = Input.GetMouseButtonDown(0);
+		if (isMouseDown)
+		{
+			mouseStart = Input.mousePosition;
+		}
+
+		bool isMouseUp = Input.GetMouseButtonUp(0);
+		if (isMouseUp)
+		{			
+			Vector3 mouseDelta = Input.mousePosition - mouseStart;
+			Debug.Log("mouseDelta.x = " + mouseDelta.x + " mouseDelta.y = " + mouseDelta.y);
+
+			if (mouseDelta.x < 10 && mouseDelta.x > -10 && mouseDelta.y < 10 && mouseDelta.y > -10)
+			{
+				Vector3 mouseEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				Debug.Log("mouseEnd.x = " + mouseEnd.x + " mouseEnd.y = " + mouseEnd.y);
+
+				for (int i = 0; i < mapWidth; i++)
+				{
+					for (int j = 0; j < mapHeight; j++)
+					{
+						if (mouseEnd.x < map[i][j].sprite.transform.position.x + 0.4f
+							&& mouseEnd.x > map[i][j].sprite.transform.position.x - 0.4f
+							&& mouseEnd.y < map[i][j].sprite.transform.position.y + 0.4f
+							&& mouseEnd.y > map[i][j].sprite.transform.position.y - 0.4f)
+						{
+							map[i][j].SetColor(0, 0, 0);
+						}
+					}
+				}
+			}
+		}
+	}
 }
