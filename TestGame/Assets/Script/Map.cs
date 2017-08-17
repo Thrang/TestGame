@@ -33,16 +33,29 @@ public class Tile
 	public int y;
 	public int flag;
 	public Terrain terrain;
+	public Color color;
 
 	public void Init()
 	{
 		spriteRenderer = sprite.GetComponent<SpriteRenderer>();
+		color = new Color(0f, 0f, 0f);
 	}
 
 	public void SetColor(int r, int g, int b)
-	{
-		spriteRenderer.color = new Color(r / 255.0f, g / 255.0f, b / 255.0f);
+	{		
+		color = new Color(r / 255.0f, g / 255.0f, b / 255.0f);
+		spriteRenderer.color = color;
 	}	
+
+	public void ResetColor()
+	{
+		spriteRenderer.color = color;
+	}
+
+	public void HighLight()
+	{
+		spriteRenderer.color = new Color(0.8f, 0.8f, 0f);
+	}
 }
 
 public class Map
@@ -337,6 +350,7 @@ public class Map
 	}
 
 	Vector3 mouseStart;
+	Tile selectedTile;
 
 	public void Update()
 	{
@@ -366,7 +380,13 @@ public class Map
 							&& mouseEnd.y < map[i][j].sprite.transform.position.y + map[i][j].spriteRenderer.bounds.size.y / 2
 							&& mouseEnd.y > map[i][j].sprite.transform.position.y - map[i][j].spriteRenderer.bounds.size.y / 2)
 						{
-							map[i][j].SetColor(0, 0, 0);
+							if (selectedTile != null)
+							{
+								selectedTile.ResetColor();
+							}
+
+							map[i][j].HighLight();
+							selectedTile = map[i][j];
 						}
 					}
 				}

@@ -7,4 +7,6 @@ public class MapConfig : ScriptableObject
 {
 	public int MAP_NUMBER_OF_ROWS;
 	public int MAP_NUMBER_OF_COLUMNS;
+
+	public float MAP_TILE_MARGIN;
 }

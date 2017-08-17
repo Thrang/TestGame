@@ -8,12 +8,20 @@ public class CameraController
 	private bool isMouseDown;
 	private bool isMouseUp;
 	private Vector3 startPostion;
+	private int zoom;
+	private float middleMouse;
+	private float zoomTime;
+	private float cameraOldSize;
+	private float cameraNewSize;
+
 	// Use this for initialization
 	public void Init(Camera mainCamera)
 	{
 		cameraComponent = mainCamera;
 		isMouseUp = true;
 		isMouseDown = false;
+		zoom = 1;
+		middleMouse = 0f;
 	}
 	
 	// Update is called once per frame
@@ -54,6 +62,42 @@ public class CameraController
 				}
 			}
 		}
+
+		if (Input.GetAxis("Mouse ScrollWheel") != 0)
+		{
+			Debug.Log("Mouse ScrollWheel = " + Input.GetAxis("Mouse ScrollWheel"));
+			if (middleMouse - Input.GetAxis("Mouse ScrollWheel") > 0 && middleMouse - Input.GetAxis("Mouse ScrollWheel") < 0.5)
+			{
+				middleMouse -= Input.GetAxis("Mouse ScrollWheel");
+
+				if (middleMouse >= 0.4f && zoom == 1)
+				{
+					StartZoom(2);
+				}
+
+				if (middleMouse <= 0.1f && zoom == 2)
+				{
+					StartZoom(1);
+				}
+			}
+		}
+
+		if (zoomTime > 0)
+		{
+			zoomTime -= Time.deltaTime;
+			if (zoomTime < 0) 
+				zoomTime = 0;
+			cameraComponent.orthographicSize = Mathf.Lerp(cameraOldSize, cameraNewSize, 1f - zoomTime);
+		}
+	}
+
+	private void StartZoom(int zoomValue)
+	{
+		cameraOldSize = zoom * 5f;
+		cameraNewSize = zoomValue * 5f;
+
+		zoomTime = 1;
+		zoom = zoomValue;
 	}
 
 	public void MoveCamera(Vector3 delta)
