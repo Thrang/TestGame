@@ -82,6 +82,9 @@ public class Map
 			}
 		}
 
+		Debug.Log("map[0][0].spriteRenderer.bounds.size.x = " + map[0][0].spriteRenderer.bounds.size.x);
+		Debug.Log("map[0][0].spriteRenderer.bounds.size.y = " + map[0][0].spriteRenderer.bounds.size.y);
+
 		queue = new Queue<Tile>();
 		terrainGenerateInfoArray = new TerrainGenerateInfo[(int)Terrain.TOTAL];
 
@@ -293,7 +296,7 @@ public class Map
 		{
 			for (int j = 0; j < mapHeight; j++)
 			{
-				map[i][j].sprite.gameObject.transform.position = new Vector2(x + i * 1, y + j * 1);
+				map[i][j].sprite.gameObject.transform.position = new Vector2(x + i * 2, y + j * 2);
 				map[i][j].sprite.SetActive(true);
 
 				switch (map[i][j].terrain)
@@ -358,10 +361,10 @@ public class Map
 				{
 					for (int j = 0; j < mapHeight; j++)
 					{
-						if (mouseEnd.x < map[i][j].sprite.transform.position.x + 0.4f
-							&& mouseEnd.x > map[i][j].sprite.transform.position.x - 0.4f
-							&& mouseEnd.y < map[i][j].sprite.transform.position.y + 0.4f
-							&& mouseEnd.y > map[i][j].sprite.transform.position.y - 0.4f)
+						if (mouseEnd.x < map[i][j].sprite.transform.position.x + map[i][j].spriteRenderer.bounds.size.x / 2
+							&& mouseEnd.x > map[i][j].sprite.transform.position.x - map[i][j].spriteRenderer.bounds.size.x / 2
+							&& mouseEnd.y < map[i][j].sprite.transform.position.y + map[i][j].spriteRenderer.bounds.size.y / 2
+							&& mouseEnd.y > map[i][j].sprite.transform.position.y - map[i][j].spriteRenderer.bounds.size.y / 2)
 						{
 							map[i][j].SetColor(0, 0, 0);
 						}
