@@ -102,7 +102,7 @@ public class CameraController
 
 	public void MoveCamera(Vector3 delta)
 	{
-		Vector3 move = new Vector3(delta.x * 18, delta.y * 10, 0);
+		Vector3 move = new Vector3(delta.x * 18 * zoom, delta.y * 10 * zoom, 0);
 		//gameObject.transform.position = position;
 		cameraComponent.gameObject.transform.Translate(move, Space.World);
 		//gameObject.transform.Translate(move, Space.World);
